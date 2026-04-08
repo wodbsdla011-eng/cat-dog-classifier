@@ -16,12 +16,13 @@ async def predict_cat_dog(file: UploadFile = File(...)):
     
     # Read the bytes of the file for prediction
     contents = await file.read()
-    prediction_result = predict_image(contents)
+    result = predict_image(contents)
     
-    if prediction_result.startswith("Error"):
-        return JSONResponse(status_code=500, content={"error": prediction_result})
+    if "error" in result:
+        return JSONResponse(status_code=500, content={"error": result["error"]})
 
     return {
         "filename": file.filename,
-        "prediction": prediction_result
+        "prediction": result["prediction"],
+        "confidence": result["confidence"]
     }

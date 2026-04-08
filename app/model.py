@@ -20,8 +20,8 @@ model.eval()  # Put model into inference mode
 # Preprocessing defined by the model weights
 preprocess = weights.transforms()
 
-def predict_image(image_bytes: bytes) -> str:
-    """Predicts if an uploaded image is a Cat, Dog, or Other."""
+def predict_image(image_bytes: bytes) -> dict:
+    """Predicts if an uploaded image is a Cat, Dog, or Other, and returns confidence score."""
     try:
         # Load image from bytes
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -35,15 +35,16 @@ def predict_image(image_bytes: bytes) -> str:
             # Convert final output logits to probabilities
             probabilities = torch.nn.functional.softmax(output[0], dim=0)
 
-        # Get the top class id
+        # Get the top class id  
         class_id = probabilities.argmax().item()
+        confidence = probabilities[class_id].item()
 
         if is_cat(class_id):
-            return "Cat"
+            return {"prediction": "Cat", "confidence": confidence}
         elif is_dog(class_id):
-            return "Dog"
+            return {"prediction": "Dog", "confidence": confidence}
         else:
-            return "Other"
+            return {"prediction": "Other", "confidence": confidence}
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return {"error": str(e)}
