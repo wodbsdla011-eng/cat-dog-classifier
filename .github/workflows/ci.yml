@@ -29,3 +29,15 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/cat-dog-classifier:latest
+
+      - name: Pull latest image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cat-dog-classifier:latest
+
+      - name: Stop existing container
+        run: |
+          docker stop catdog-container || true
+          docker rm catdog-container || true
+
+      - name: Run new container
+        run: |
+          docker run -d -p 8000:8000 --name catdog-container --restart always ${{ secrets.DOCKERHUB_USERNAME }}/cat-dog-classifier:latest
