@@ -40,8 +40,9 @@ jobs:
 
       - name: Stop existing container
         run: |
-          docker stop catdog-container || true
-          docker rm catdog-container || true
+          docker stop catdog-container
+          docker rm catdog-container
+        continue-on-error: true
 
       - name: Run new container
         run: |
