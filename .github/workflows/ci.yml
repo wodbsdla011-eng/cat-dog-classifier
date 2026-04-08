@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Deploy Docker Image
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -30,6 +30,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/cat-dog-classifier:latest
 
+  deploy-on-local:
+    needs: build-and-push
+    runs-on: self-hosted
+
+    steps:
       - name: Pull latest image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cat-dog-classifier:latest
 
